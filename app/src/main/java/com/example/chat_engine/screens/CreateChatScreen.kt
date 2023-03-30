@@ -3,6 +3,8 @@ package com.example.chat_engine.screens
 import android.annotation.SuppressLint
 
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +19,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -27,16 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import com.example.chat_engine.ViewModel.MainViewModel
-import com.example.chat_engine.mychats.CreateChat.CreateChatDataFile
-import com.example.chat_engine.mychats.GetMessages.GetMessagesDataClass.MessagesDataClass
-//import com.example.chat_engine.mychats.GetMessages.GetMessagesFunction
-//import com.example.chat_engine.mychats.GetMessages.getMessages
-import com.example.chat_engine.mychats.responsedataclass
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -44,7 +38,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
 import com.example.chat_engine.GetChats.GetChatDetails
+import com.example.chat_engine.MainActivity
 import com.example.chat_engine.R
+import com.example.chat_engine.mychats.AddChatMembers.AddMembersInChat
 import com.example.chat_engine.mychats.ChatHelpingFunction
 import com.example.chat_engine.mychats.GetMessages.getMessages
 
@@ -52,9 +48,13 @@ import com.example.chat_engine.mychats.GetMessages.getMessages
 @Composable
 fun second_screen(
     vm: MainViewModel,
-    onClickGotoMessages:()->Unit
+    onClickGotoMessages:()->Unit,
+    sharedPreferences:SharedPreferences
 ) {
+    val editor: SharedPreferences.Editor = sharedPreferences.edit()
     val context= LocalContext.current
+
+    GetChatDetails(context,vm)
     GetChatDetails(
         context,
         vm,
@@ -69,8 +69,16 @@ fun second_screen(
             contentColor = MaterialTheme.colors.onPrimary,
             actions = {
                 IconButton(
-                    onClick = { /* Handle action click */ }) {
-                    Icon(Icons.Filled.Search, contentDescription = "Search")
+                    onClick = {
+                        editor.putString("USERNAME", "")
+                        editor.putString("SECRET", "")
+                        editor.apply()
+                        val intent = Intent(context, MainActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        context.startActivity(intent)
+                    }) {
+                    Icon(Icons.Filled.ExitToApp, contentDescription = "Search")
                 }
             }
         )
@@ -97,19 +105,19 @@ fun second_screen(
                             modifier = Modifier
                                 .padding(16.dp)
                                 .background(MyColor)
-                                .pointerInput(Unit){
+                                .pointerInput(Unit) {
                                     detectTapGestures(
                                         onLongPress = {
-                                            MyColor=Color.Gray
+                                            MyColor = Color.Gray
                                         }
                                     )
                                 }
                                 .clickable(
                                     onClick = {
-                                        vm.open.value=true
+                                        vm.open.value = true
                                         vm.chatId = item.id
-                                            vm.chatAccessKey = item.access_key
-                                            onClickGotoMessages()
+                                        vm.chatAccessKey = item.access_key
+                                        onClickGotoMessages()
                                         getMessages(
                                             context = context,
                                             vm,
@@ -146,7 +154,10 @@ fun second_screen(
                                     color = Color.Gray
                                 )
                             }
-                            IconButton(onClick = { /* Handle action click */ }) {
+                            IconButton(onClick = {
+                                vm.chatId=item.id
+                                AddMembersInChat(context,vm)
+                            }) {
                                 Icon(Icons.Filled.Add, contentDescription = "Add Member")
                             }
                         }
@@ -188,6 +199,7 @@ fun second_screen(
         onClickGotoMessages,
         vm
     )
+
 }
 
 @Composable
@@ -204,13 +216,65 @@ fun GradientIcon(
         modifier = modifier
             .fillMaxHeight()
             .width(30.dp)
-            .background(
-                brush = Brush.horizontalGradient(colors),
-                shape = shape
-            )
+//            .background(
+//                brush = Brush.horizontalGradient(colors),
+//                shape = shape
+//            )
     )
 }
 
+@Composable
+fun AddMemberIcon(
+    context:Context,
+    vm: MainViewModel,
+    showDialog:Boolean
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(end = 30.dp, bottom = 30.dp),
+        verticalArrangement = Arrangement.Bottom,
+        horizontalAlignment = Alignment.End
+    ) {
+
+        showDialog=showDialog
+
+        if (showDialog) {
+            Dialog(
+                onDismissRequest = { showDialog = false },
+                content = {
+                    Column(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colors.surface)
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Card(
+                            modifier = Modifier
+                        ) {
+                            Column() {
+                                var flag by remember {
+                                    mutableStateOf(false)
+                                }
+                                vm.MemberName=SimpleTextField("Enter User Name", KeyboardType.Text)
+                                flag = vm.MemberName != ""
+                                Button(
+                                    enabled = flag,
+                                    onClick = {
+
+                                    }) {
+                                    Text(text = "Submit")
+                                }
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+}
 
 @Composable
 fun floating_Button(

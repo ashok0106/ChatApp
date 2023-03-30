@@ -32,21 +32,17 @@ class IsTypingClass(val username: String, val password: String,val chatId:Int){
         return retrofitAPI
     }
 }
+
 fun IsTypingHelpingFunction(
     context: Context,
     viewModel: MainViewModel
 )
 {
-
-
     val retrofitAPI= viewModel.IsUserTyping()
     val call: Call<IsTypingDataClass?>? = retrofitAPI.Istyping()
     call!!.enqueue(object : Callback<IsTypingDataClass?> {
         override fun onResponse(call: Call<IsTypingDataClass?>?, response: Response<IsTypingDataClass?>) {
             val model: IsTypingDataClass? = response.body()
-//            if (model != null) {
-//                println(model.action)
-//            }
             val resp =
                 "Response Code : " + response.code()
             viewModel.result=resp

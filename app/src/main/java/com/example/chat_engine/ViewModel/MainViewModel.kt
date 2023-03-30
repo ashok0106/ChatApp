@@ -15,7 +15,6 @@ import com.example.chat_engine.GetUsers.GetUserApi
 import com.example.chat_engine.GetUsers.GetUserClass
 import com.example.chat_engine.GetUsers.GetUsersDataClass
 import com.example.chat_engine.IsTyping.IsTypingClass
-import com.example.chat_engine.IsTyping.IsTypingDataClass
 import com.example.chat_engine.IsTyping.IstypingApi
 import com.example.chat_engine.login.LoginClass
 import com.example.chat_engine.login.LoginDataClass
@@ -51,6 +50,7 @@ class MainViewModel():ViewModel() {
 //    to authenticate user
     var user_name by mutableStateOf("")
     var password by mutableStateOf("")
+
     var initial_Data= LoginDataClass("","",false,"","",true,"")
     var UserData: LoginDataClass? by mutableStateOf(initial_Data)
 
@@ -115,25 +115,35 @@ class MainViewModel():ViewModel() {
         return apiService
     }
 
-//    To add members in a chat
     var MemberName by mutableStateOf("")
     fun AddMemberInChat(): AddMembersApi {
         val apiService= AddMemberClass(user_name,password,chatId).getInstance()
         return apiService
     }
 
-//    this is to check if user is typing or not
-    private val _istyping= MutableStateFlow(false)
-    val istyping:StateFlow<Boolean> = _istyping
+//    this is to check if a user is typing or not
+//    private val _istyping= MutableStateFlow(false)
+//    var istyping:StateFlow<Boolean> = _istyping
+//
+//    fun updateIsTyping(newList: Boolean){
+//        _istyping.value=newList
+//    }
 
-    fun updateIsTyping(newList: Boolean){
-        _istyping.value=newList
-    }
+    val istyping = mutableStateOf(false)
+    val istypinguser= mutableStateOf("")
 
     @SuppressLint("SuspiciousIndentation")
     fun IsUserTyping(): IstypingApi {
     val apiService= IsTypingClass(user_name,password,chatId).getInstance()
         return apiService
+    }
+    fun starttyping(){
+        viewModelScope.launch {
+            withContext(Dispatchers.Default){
+                delay(2000L)
+            }
+            istyping.value=false
+        }
     }
 
 //    LOADING INDICATOR

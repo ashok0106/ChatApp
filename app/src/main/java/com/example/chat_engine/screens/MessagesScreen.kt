@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,13 +49,11 @@ fun GetMessagesFunction(
         DialogBoxLoading()
     }
     var temp:()->Unit
-    var istyping by remember {
-        mutableStateOf("")
-    }
+
     Column(modifier = Modifier
     ) {
 
-        MyUI(vm,istyping,onClickGotoChatScreen)
+        MyUI(vm,onClickGotoChatScreen)
 
         val messageListStateList=vm.messageList.collectAsState()
         val messageList=messageListStateList.value
@@ -219,7 +218,6 @@ fun GetMessagesFunction(
                         placeholder = { Text(text = "Message") }
                         //        textStyle = TextStyle(brush = brush)
                     )
-                    istyping = ""
                     var flag by remember {
                         mutableStateOf(false)
                     }
@@ -252,32 +250,33 @@ fun GetMessagesFunction(
 
 
 
+@OptIn(DelicateCoroutinesApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun MyUI(vm:MainViewModel,istyping:String,onClickGotoChatScreen:()->Unit) {
+fun MyUI(vm:MainViewModel,onClickGotoChatScreen:()->Unit) {
+
     val contextForToast = LocalContext.current.applicationContext
 
-    val isTypingState=vm.istyping.collectAsState()
-    var isTYping=isTypingState.value
-//    var isTyping by remember {
-//        mutableStateOf(isTypingState.value)
-//    }
-    println("*************************$isTYping")
+////    val isTypingState=vm.istyping.collectAsState()
+////    var isTYping =isTypingState.value
+//
+//    Text(text = vm.istyping.toString())
+//
+//    println("*************************$vm.istyping")
+////    println("*************************$")
 
+//    println(vm.user_name+"//////////////")
+//    println(vm.istypinguser.value+"//////////////")
 
-    CoroutineScope(Dispatchers.Main).launch{
-        if(isTYping){
-            delay(3000L)
-            isTYping=false
-        }
-    }
     TopAppBar(
         title = {
             Row() {
-                if(isTYping==true){
-                    Text(text = " is typing")
+                if(vm.istyping.value&&vm.user_name!=vm.istypinguser.value){
+                    Text(text = "${vm.istypinguser.value} is typing")
+                    vm.starttyping()
+//                    isTYping=false
                 }
-                else{
+                else {
                     LazyRow(
                         modifier = Modifier
 //                        .height(20.dp)

@@ -1,6 +1,7 @@
 package com.example.chat_engine.navigation
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import androidx.compose.runtime.*
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -18,6 +19,7 @@ import com.example.chat_engine.signup.SignUpScreen
 @Composable
 fun navigation(
     vm: MainViewModel,
+    sharedPreferences:SharedPreferences,
     navController: NavHostController= rememberNavController()
 ) {
     var startDestination:String="first_screen"
@@ -32,7 +34,8 @@ fun navigation(
                 onClickGotoSignUpScreen={
                     navController.navigate("SignUpScreen")
                 },
-                vm
+                vm,
+                sharedPreferences
             )
         }
         composable(route="SignUpScreen"){
@@ -44,6 +47,7 @@ fun navigation(
                 onClickGotoMessages={
                   navController.navigate("StartMessaging")
                 },
+                sharedPreferences
             )
         }
         composable(route="StartMessaging"){

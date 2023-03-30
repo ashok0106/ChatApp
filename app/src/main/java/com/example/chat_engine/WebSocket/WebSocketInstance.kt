@@ -32,9 +32,15 @@ open class ChatWebSocket(private val mainViewModel: MainViewModel): WebSocketLis
         val gson = Gson()
         val json = JSONObject(text)
         val action = json.getString("action")
+
         if(action=="is_typing"){
-            mainViewModel.updateIsTyping(true)
+            val data=json.getJSONObject("data")
+            val name=data.getString("person")
+            mainViewModel.istyping.value=true
+            mainViewModel.istypinguser.value= name.toString()
+//            println("MYTAG /////////////////// $name")
         }
+
         if (action == "new_message") {
             val message = json.getJSONObject("data").getJSONObject("message")
             val receivedMessage = MessagesDataClassItem(

@@ -1,6 +1,7 @@
 package com.example.chat_engine.screens
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -49,7 +50,8 @@ import retrofit2.Response
 fun LoginScreen(
     onClickGotoMainScreen:()->Unit,
     onClickGotoSignUpScreen:()->Unit,
-    vm: MainViewModel
+    vm: MainViewModel,
+    sharedPreferences: SharedPreferences
 ) {
     val ColumnBackGround ="#d6d6d6".toColor()
     val CardBackGround ="#f5f5f2".toColor()
@@ -59,122 +61,137 @@ fun LoginScreen(
         vm.startThread()
         DialogBoxLoading()
     }
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val gradient = Brush.linearGradient(
-            colors = listOf("#9e05fc".toColor(),"#0571e6".toColor()),
-            start = Offset(0f, 0f),
-            end = Offset(0f, constraints.maxHeight.toFloat())
-        )
-        val gradient2 = Brush.linearGradient(
-            colors = listOf("#cd7aff".toColor(),"#9dc3ed".toColor()),
-            start = Offset(0f, 0f),
-            end = Offset(0f, constraints.maxHeight.toFloat())
-        )
+    val email = sharedPreferences.getString("USERNAME", "").toString()
+    val secrett = sharedPreferences.getString("SECRET", "").toString()
 
-        Column(
-            modifier = Modifier
-                .background(gradient)
-                .fillMaxSize()
-        ) {
-            Card(
+    println("*** $email")
+
+    if (email.isNotBlank()){
+        vm.user_name = email
+        vm.password = secrett
+
+        second1(context,email,secrett,onClickGotoMainScreen,vm,sharedPreferences)
+    }
+    else {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val gradient = Brush.linearGradient(
+                colors = listOf("#9e05fc".toColor(), "#0571e6".toColor()),
+                start = Offset(0f, 0f),
+                end = Offset(0f, constraints.maxHeight.toFloat())
+            )
+            val gradient2 = Brush.linearGradient(
+                colors = listOf("#cd7aff".toColor(), "#9dc3ed".toColor()),
+                start = Offset(0f, 0f),
+                end = Offset(0f, constraints.maxHeight.toFloat())
+            )
+
+            Column(
                 modifier = Modifier
-                    .fillMaxHeight(0.8f)
-                    .padding(top = 150.dp, start = 20.dp, end = 20.dp, bottom = 0.dp)
-                    .clip(RoundedCornerShape(60.dp))
-                    ,
-                backgroundColor = CardBackGround
-//            .background(CardBackGround)
+                    .background(gradient)
+                    .fillMaxSize()
             ) {
-                Box(
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(brush = gradient2)
+                        .fillMaxHeight(0.8f)
+                        .padding(top = 150.dp, start = 20.dp, end = 20.dp, bottom = 0.dp)
+                        .clip(RoundedCornerShape(60.dp)),
+                    backgroundColor = CardBackGround
+//            .background(CardBackGround)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.user),
-                        contentDescription = "Login Icon",
+                    Box(
                         modifier = Modifier
-                            .padding(
-                                start = 140.dp,
-                                top = 20.dp
-                            )
-                            .height(70.dp)
-                            .width(70.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                    ClickableText(
-                        text = AnnotatedString("Sign up here"),
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(20.dp),
-                        onClick = {
-                            onClickGotoSignUpScreen()
-                        },
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
-                            textDecoration = TextDecoration.Underline,
-                            color = Purple700
-                        )
-                    )
-                }
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    Text(
-                        text = "Login",
-                        style = TextStyle(
-                            fontSize = 40.sp,
-                            fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-                    vm.user_name = SimpleTextField("Username", KeyboardType.Text)
-                    Spacer(modifier = Modifier.height(20.dp))
-                    vm.password = SimpleTextField("Password", KeyboardType.Password)
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
-
-                        var temp by remember {
-                            mutableStateOf(false)
-                        }
-                        var buttoncolor by remember {
-                            mutableStateOf("#a302cc".toColor())
-                        }
-                        if (vm.user_name == "" || vm.password == "") {
-                            temp = false
-                            buttoncolor = "#a302cc".toColor()
-                        } else {
-                            temp = true
-                            buttoncolor = "#f4defa".toColor()
-                        }
-
-
-                        Button(
-                            colors = ButtonDefaults.buttonColors(backgroundColor = buttoncolor),
-                            enabled = temp,
-                            onClick = {
-                                vm.open.value=true
-                                second1(
-                                    context = context,
-                                    onClickGotoMainScreen,
-                                    vm
-                                )
-                            },
-                            shape = RoundedCornerShape(50.dp),
+                            .fillMaxSize()
+                            .background(brush = gradient2)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.user),
+                            contentDescription = "Login Icon",
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                        ) {
-                            Text(text = "Login")
-                        }
+                                .padding(
+                                    start = 140.dp,
+                                    top = 20.dp
+                                )
+                                .height(70.dp)
+                                .width(70.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                        ClickableText(
+                            text = AnnotatedString("Sign up here"),
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(20.dp),
+                            onClick = {
+                                onClickGotoSignUpScreen()
+                            },
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+                                textDecoration = TextDecoration.Underline,
+                                color = Purple700
+                            )
+                        )
                     }
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = "Login",
+                            style = TextStyle(
+                                fontSize = 40.sp,
+                                fontFamily = androidx.compose.ui.text.font.FontFamily.Serif
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+                        vm.user_name = SimpleTextField("Username", KeyboardType.Text)
+                        Spacer(modifier = Modifier.height(20.dp))
+                        vm.password = SimpleTextField("Password", KeyboardType.Password)
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
+
+                            var temp by remember {
+                                mutableStateOf(false)
+                            }
+                            var buttoncolor by remember {
+                                mutableStateOf("#a302cc".toColor())
+                            }
+                            if (vm.user_name == "" || vm.password == "") {
+                                temp = false
+                                buttoncolor = "#a302cc".toColor()
+                            } else {
+                                temp = true
+                                buttoncolor = "#f4defa".toColor()
+                            }
+
+
+                            Button(
+                                colors = ButtonDefaults.buttonColors(backgroundColor = buttoncolor),
+                                enabled = temp,
+                                onClick = {
+                                    vm.open.value = true
+                                    second1(
+                                        context = context,
+                                        vm.user_name,
+                                        vm.password,
+                                        onClickGotoMainScreen,
+                                        vm,
+                                        sharedPreferences
+                                    )
+                                },
+                                shape = RoundedCornerShape(50.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                            ) {
+                                Text(text = "Login")
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
                 }
             }
         }

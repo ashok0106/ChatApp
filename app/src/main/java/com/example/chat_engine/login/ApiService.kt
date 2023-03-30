@@ -1,9 +1,11 @@
 package com.example.chat_engine.login
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
 import com.example.chat_engine.ConstantData.ConstVariables
 import com.example.chat_engine.ConstantData.httpclient
+import com.example.chat_engine.GetChats.GetChatDetails
 import com.example.chat_engine.ViewModel.MainViewModel
 import com.example.chat_engine.signup.ApiService
 import okhttp3.OkHttpClient
@@ -36,10 +38,13 @@ class LoginClass(val username:String,val password:String){
 
 fun second1(
     context: Context,
+    username: String,
+    password: String,
     onClickGotoMainScreen: () -> Unit,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    sharedPreferences: SharedPreferences
 ){
-
+    val editor: SharedPreferences.Editor = sharedPreferences.edit()
     val retrofitAPI=viewModel.AuthenticateUser()
     val call: Call<LoginDataClass?>? = retrofitAPI.getUser()
     call!!.enqueue(object : Callback<LoginDataClass?> {
@@ -57,6 +62,14 @@ fun second1(
                 viewModel.open.value = false
                 Toast.makeText(context, "Wrong Credentials", Toast.LENGTH_SHORT).show()
             }
+
+            if(response.isSuccessful){
+                GetChatDetails(context,viewModel)
+                editor.putString("USERNAME", username)
+                editor.putString("SECRET", password)
+                editor.apply()
+            }
+
         }
         override fun onFailure(call: Call<LoginDataClass?>, t: Throwable) {
             viewModel.result = "Error found is : " + t.message

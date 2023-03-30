@@ -27,7 +27,7 @@ class AddMemberClass(val username:String,val password:String,val chatid:Int){
     fun getInstance(): AddMembersApi {
         val httpClient = httpclient(username,password)
         val retrofitAPI = Retrofit.Builder()
-            .baseUrl(ConstVariables().AddMembersBaseUrl)
+            .baseUrl(url)
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(AddMembersApi::class.java)
