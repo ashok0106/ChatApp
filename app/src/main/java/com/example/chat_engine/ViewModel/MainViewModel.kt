@@ -53,6 +53,7 @@ class MainViewModel():ViewModel() {
 
     var initial_Data= LoginDataClass("","",false,"","",true,"")
     var UserData: LoginDataClass? by mutableStateOf(initial_Data)
+    var CreateChatName by mutableStateOf("")
 
     fun AuthenticateUser(): loginService {
             val apiService= LoginClass(user_name,password).getInstance()
@@ -60,8 +61,13 @@ class MainViewModel():ViewModel() {
     }
 
 //    to create new chat
-    var chat_name by mutableStateOf("")
-    var tempchat= CreateChatDataFile(false,"")
+    var chat_name by mutableStateOf("Agent")
+
+//    fun GenerateChatName(text:String){
+//        chat_name=text
+//    }
+
+    var tempchat= CreateChatDataFile(false,"", usernames = listOf("Admin"))
     var NewChatDetails: CreateChatDataFile? by mutableStateOf(tempchat)
 
 
@@ -100,6 +106,8 @@ class MainViewModel():ViewModel() {
         val apiService=GetChatClass(user_name,password).getInstance()
         return apiService
     }
+
+
 
 //    To get chat usernames
     var UsersList:MutableList<GetUsersDataClass> by mutableStateOf(mutableListOf())

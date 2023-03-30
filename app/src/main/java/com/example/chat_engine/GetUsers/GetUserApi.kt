@@ -42,7 +42,7 @@ class GetUserClass(val username:String,val password:String){
         return retrofitAPI
     }
 }
-fun GetChatDetails(
+fun GetUsers(
     context: Context,
     vm: MainViewModel,
 ){

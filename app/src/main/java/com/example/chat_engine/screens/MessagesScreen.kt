@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
@@ -18,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chat_engine.GetChatMembers.GetChatMembers
 import com.example.chat_engine.IsTyping.IsTypingHelpingFunction
+import com.example.chat_engine.R
 import com.example.chat_engine.WebSocket.ChatWebSocket
 import com.example.chat_engine.ViewModel.MainViewModel
 import com.example.chat_engine.mychats.SendMessages.SendMessageDataClass
@@ -38,9 +41,6 @@ fun GetMessagesFunction(
     vm: MainViewModel,
     ChatWebSocket:ChatWebSocket,
     onClickGotoChatScreen:()->Unit
-//    mylist:MutableList<MessagesDataClassItem>
-//    listener: MyWebSocketListener,
-//    webSocket: WebSocket
 ) {
     val context= LocalContext.current
     GetChatMembers(context = context,vm)
@@ -257,24 +257,12 @@ fun MyUI(vm:MainViewModel,onClickGotoChatScreen:()->Unit) {
 
     val contextForToast = LocalContext.current.applicationContext
 
-////    val isTypingState=vm.istyping.collectAsState()
-////    var isTYping =isTypingState.value
-//
-//    Text(text = vm.istyping.toString())
-//
-//    println("*************************$vm.istyping")
-////    println("*************************$")
-
-//    println(vm.user_name+"//////////////")
-//    println(vm.istypinguser.value+"//////////////")
-
     TopAppBar(
         title = {
             Row() {
                 if(vm.istyping.value&&vm.user_name!=vm.istypinguser.value){
                     Text(text = "${vm.istypinguser.value} is typing")
                     vm.starttyping()
-//                    isTYping=false
                 }
                 else {
                     LazyRow(
@@ -305,7 +293,9 @@ fun MyUI(vm:MainViewModel,onClickGotoChatScreen:()->Unit) {
                 Toast.makeText(contextForToast, "Back Icon Clicked", Toast.LENGTH_SHORT)
                     .show()
             }) {
-                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Go Back")
+//                Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24), contentDescription = "Go Back")
+//                Spacer(modifier = Modifier.width(20.dp))
+                Icon( imageVector = Icons.Filled.ArrowBack,contentDescription = "Go Back")
             }
         },
 

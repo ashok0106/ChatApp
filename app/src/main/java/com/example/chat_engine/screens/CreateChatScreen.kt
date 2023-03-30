@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -20,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
 import com.example.chat_engine.GetChats.GetChatDetails
+import com.example.chat_engine.GetUsers.GetUsers
 import com.example.chat_engine.MainActivity
 import com.example.chat_engine.R
 import com.example.chat_engine.mychats.AddChatMembers.AddMembersInChat
@@ -46,13 +45,17 @@ import com.example.chat_engine.mychats.GetMessages.getMessages
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun second_screen(
+fun ChatScreen(
     vm: MainViewModel,
     onClickGotoMessages:()->Unit,
-    sharedPreferences:SharedPreferences
+    sharedPreferences:SharedPreferences,
+    onClickGotoFAQScreen:()->Unit
 ) {
     val editor: SharedPreferences.Editor = sharedPreferences.edit()
     val context= LocalContext.current
+    var showuser by remember {
+        mutableStateOf(false)
+    }
 
     GetChatDetails(context,vm)
     GetChatDetails(
@@ -82,7 +85,6 @@ fun second_screen(
                 }
             }
         )
-//        Text(text = vm.GetChatList.size.toString())
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
@@ -156,7 +158,8 @@ fun second_screen(
                             }
                             IconButton(onClick = {
                                 vm.chatId=item.id
-                                AddMembersInChat(context,vm)
+                                showuser=true
+//                                AddMembersInChat(context,vm)
                             }) {
                                 Icon(Icons.Filled.Add, contentDescription = "Add Member")
                             }
@@ -181,10 +184,77 @@ fun second_screen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "This is a message",
+                                    text = "Check Check",
                                     fontSize = 14.sp,
                                     color = Color.Gray
                                 )
+                            }
+                        }
+                    )
+                }
+                if (showuser) {
+                    GetUsers(context,vm)
+                    Dialog(
+                        onDismissRequest = { showuser = false },
+                        content = {
+                            Card(
+                                modifier= Modifier
+                                    .fillMaxWidth(0.8f)
+                                    .fillMaxHeight(0.6f)
+                                    .clip(RoundedCornerShape(20.dp))
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxHeight(0.6f)
+                                        .fillMaxWidth(0.8f)
+                                        .background(MaterialTheme.colors.surface)
+                                        .padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        text = "Click To Add",
+                                        fontSize = 30.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.height(5.dp))
+                                    LazyColumn(
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {
+                                        itemsIndexed(vm.UsersList) { index, item ->
+                                            Card(
+                                                modifier = Modifier
+                                                    .height(40.dp)
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        vm.MemberName=item.username
+                                                        AddMembersInChat(context,vm)
+                                                        showuser=false
+                                                    }
+                                            ) {
+                                                Column(
+                                                    modifier = Modifier
+                                                        .height(30.dp)
+                                                        .fillMaxWidth(),
+                                                    verticalArrangement = Arrangement.Center,
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    Text(
+                                                        text = item.username.toString(),
+                                                        fontSize = 20.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                    Text(
+                                        text = vm.UsersList.size.toString(),
+                                        fontSize = 14.sp,
+                                        color = Color.Gray
+                                    )
+                                }
                             }
                         }
                     )
@@ -196,39 +266,23 @@ fun second_screen(
     }
     floating_Button(
         context,
-        onClickGotoMessages,
+        onClickGotoFAQScreen,
         vm
     )
 
+//    val temp=AddMemberIcon(vm = vm, usershowDialog = showuser)
+//    showuser=temp
+
+
 }
 
-@Composable
-fun GradientIcon(
-    painter: Painter,
-    colors: List<Color>,
-    shape: Shape,
-    modifier: Modifier = Modifier,
-    contentDescription: String? = null
-) {
-    Icon(
-        painter = painter,
-        contentDescription = contentDescription,
-        modifier = modifier
-            .fillMaxHeight()
-            .width(30.dp)
-//            .background(
-//                brush = Brush.horizontalGradient(colors),
-//                shape = shape
-//            )
-    )
-}
+
 
 @Composable
 fun AddMemberIcon(
-    context:Context,
     vm: MainViewModel,
-    showDialog:Boolean
-) {
+    usershowDialog:Boolean
+):Boolean {
     var showDialog by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -238,7 +292,7 @@ fun AddMemberIcon(
         horizontalAlignment = Alignment.End
     ) {
 
-        showDialog=showDialog
+        showDialog=usershowDialog
 
         if (showDialog) {
             Dialog(
@@ -274,12 +328,13 @@ fun AddMemberIcon(
             )
         }
     }
+    return showDialog
 }
 
 @Composable
 fun floating_Button(
     context:Context,
-    onClickGotoMessages:()->Unit,
+    onClickGotoFAQScreen:()->Unit,
     vm: MainViewModel
 ) {
     val context= LocalContext.current
@@ -294,7 +349,8 @@ fun floating_Button(
 
         FloatingActionButton(
             onClick = {
-                showDialog=true
+//                showDialog=true
+                onClickGotoFAQScreen()
             }
         )
         {
@@ -342,3 +398,19 @@ fun floating_Button(
     }
 }
 
+@Composable
+fun GradientIcon(
+    painter: Painter,
+    colors: List<Color>,
+    shape: Shape,
+    modifier: Modifier = Modifier,
+    contentDescription: String? = null
+) {
+    Icon(
+        painter = painter,
+        contentDescription = contentDescription,
+        modifier = modifier
+            .fillMaxHeight()
+            .width(30.dp)
+    )
+}

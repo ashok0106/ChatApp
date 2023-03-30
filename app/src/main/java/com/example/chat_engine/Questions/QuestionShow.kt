@@ -20,16 +20,16 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chat_engine.ViewModel.MainViewModel
 
 @Composable
-fun QuestionList(questionViewModel: QuestionViewModel) {
+fun ShowQuestions(questionViewModel: QuestionViewModel,viewModel: MainViewModel) {
     val expandedQuestion = remember { mutableStateOf<Question?>(null) }
 
     val questions by questionViewModel.questions.observeAsState(emptyList())
-
-//    Text(text = "hiiii")
-
+    var open by remember {
+        mutableStateOf(false)
+    }
     LazyColumn(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -39,7 +39,16 @@ fun QuestionList(questionViewModel: QuestionViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
-                    .clickable { expandedQuestion.value = question },
+                    .clickable {
+                    if (open==false)
+                    {
+                        expandedQuestion.value = question
+                        open=true;
+                    }else{
+                        expandedQuestion.value = question
+                        open=false;
+                    }
+                               },
                 elevation = 8.dp
             ) {
                 Text(
@@ -56,9 +65,14 @@ fun QuestionList(questionViewModel: QuestionViewModel) {
 
             if (expandedQuestion.value == question) {
                 question.subQuestions.forEach { subQuestion ->
+                    viewModel.chat_name=question.title
                     SubQuestion(
+                        viewModel,
                         subQuestion = subQuestion,
-                        onSubQuestionClick = { expandedQuestion.value = question }
+                        onSubQuestionClick = {
+                            expandedQuestion.value = question
+                                             },
+
                     )
                 }
             }
@@ -72,12 +86,13 @@ fun QuestionList(questionViewModel: QuestionViewModel) {
 
 @Composable
 fun SubQuestion(
+    viewModel:MainViewModel,
     subQuestion: SubQuestion,
-    onSubQuestionClick: () -> Unit
+    onSubQuestionClick: () -> Unit,
 ) {
     var expandedSubQuestion by remember { mutableStateOf(false) }
 
-//Text(text = subQuestion.subQuestions.toString())
+
     if(subQuestion.subQuestions?.isEmpty() == true){
         Row() {
             Icon(Icons.Default.ArrowForward, contentDescription = "Solution")
@@ -113,10 +128,18 @@ fun SubQuestion(
                 )
 
                 if (expandedSubQuestion) {
+
                     subQuestion.subQuestions?.forEach { nestedSubQuestion ->
+
+
+//                        println("$$$$$$$$$$$$$$$$$$$$$$$$$ ${subQuestion.question}")
+                        viewModel.chat_name=subQuestion.question
+
+                        println("$$$$$$$$$$$$$$$$$$$$${ viewModel.chat_name }")
                         SubQuestion(
+                            viewModel,
                             subQuestion = nestedSubQuestion,
-                            onSubQuestionClick = onSubQuestionClick
+                            onSubQuestionClick = onSubQuestionClick,
                         )
                     }
                 }

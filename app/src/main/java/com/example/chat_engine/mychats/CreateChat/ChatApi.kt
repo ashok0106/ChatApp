@@ -12,11 +12,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
-
+import retrofit2.http.PUT
 
 
 interface MakeChatService{
-    @POST("chats/")
+    @PUT("chats/")
     fun addChat(
         @Body myadded: CreateChatDataFile?
     ): Call<responsedataclass?>?
@@ -37,7 +37,7 @@ fun ChatHelpingFunction(
     viewModel: MainViewModel
 )
 {
-    val myadded= CreateChatDataFile(false,viewModel.chat_name)
+    val myadded= CreateChatDataFile(false,viewModel.chat_name, listOf("Admin"))
     println(viewModel.chat_name)
     val retrofitAPI= viewModel.CreateNewChat()
 

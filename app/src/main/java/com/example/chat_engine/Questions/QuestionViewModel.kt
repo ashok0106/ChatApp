@@ -1,6 +1,10 @@
 package com.example.chat_engine.Questions
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,6 +14,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class QuestionViewModel(application: Application) : AndroidViewModel(application) {
+
+    var newchatname = mutableStateOf("")
 
     private val questionDao = QuestionDataBase.getInstance(application).questionDao()
 

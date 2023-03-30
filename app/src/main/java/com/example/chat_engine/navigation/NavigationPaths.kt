@@ -10,9 +10,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.chat_engine.WebSocket.ChatWebSocket
 //import com.example.chat_engine.login.LoginScreen
 import com.example.chat_engine.ViewModel.MainViewModel
+import com.example.chat_engine.screens.FAQScreen
 import com.example.chat_engine.screens.GetMessagesFunction
 import com.example.chat_engine.screens.LoginScreen
-import com.example.chat_engine.screens.second_screen
+import com.example.chat_engine.screens.ChatScreen
 import com.example.chat_engine.signup.SignUpScreen
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -29,7 +30,7 @@ fun navigation(
         composable(route="first_screen"){
             LoginScreen(
                 onClickGotoMainScreen={
-                    navController.navigate("second_screen")
+                    navController.navigate("Chat_screen")
                 },
                 onClickGotoSignUpScreen={
                     navController.navigate("SignUpScreen")
@@ -41,13 +42,16 @@ fun navigation(
         composable(route="SignUpScreen"){
             SignUpScreen(vm)
         }
-        composable(route="second_screen"){
-            second_screen(
+        composable(route="Chat_screen"){
+            ChatScreen(
                 vm,
                 onClickGotoMessages={
                   navController.navigate("StartMessaging")
                 },
-                sharedPreferences
+                sharedPreferences,
+                onClickGotoFAQScreen={
+                    navController.navigate("GoToFAQScreen")
+                },
             )
         }
         composable(route="StartMessaging"){
@@ -55,11 +59,19 @@ fun navigation(
                 vm = vm,
                 ChatWebSocket,
                 onClickGotoChatScreen={
-                    navController.navigate("second_screen"){
+                    navController.navigate("Chat_screen"){
                         popUpTo("second_screen")
                     }
 
                 }
+            )
+        }
+        composable(route="GoToFAQScreen"){
+            FAQScreen(
+                onClickGoToChatScreen={
+                    navController.navigate("Chat_screen")
+                },
+                vm
             )
         }
     }

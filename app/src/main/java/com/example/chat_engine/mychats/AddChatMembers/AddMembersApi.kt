@@ -45,6 +45,7 @@ fun AddMembersInChat(
     val call: Call<AddMembersDataClass?>? = retrofitAPI.AddMember(myadded)
     call!!.enqueue(object : Callback<AddMembersDataClass?> {
         override fun onResponse(call: Call<AddMembersDataClass?>?, response: Response<AddMembersDataClass?>) {
+            Toast.makeText(context,"User Added", Toast.LENGTH_SHORT).show()
             val model: AddMembersDataClass? = response.body()
             val resp =
                 "Response Code : " + response.code()
