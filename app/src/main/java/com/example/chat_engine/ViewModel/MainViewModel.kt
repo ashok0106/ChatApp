@@ -27,7 +27,6 @@ import com.example.chat_engine.mychats.GetMessages.ChatMessagesApi
 import com.example.chat_engine.mychats.GetMessages.ChatMessagesClass
 import com.example.chat_engine.mychats.GetMessages.GetMessagesDataClass.MessagesDataClassItem
 import com.example.chat_engine.mychats.MakeChatService
-import com.example.chat_engine.mychats.SendMessages.SendMessageDataClass
 import com.example.chat_engine.mychats.SendMessages.SendMessagesApi
 import com.example.chat_engine.mychats.SendMessages.SendMessagesClass
 import kotlinx.coroutines.Dispatchers
@@ -55,7 +54,6 @@ class MainViewModel():ViewModel() {
 
     var initial_Data= LoginDataClass("","",false,"","",true,"")
     var UserData: LoginDataClass? by mutableStateOf(initial_Data)
-    var CreateChatName by mutableStateOf("")
 
     fun AuthenticateUser(): loginService {
             val apiService= LoginClass(user_name,password).getInstance()
@@ -91,7 +89,6 @@ class MainViewModel():ViewModel() {
     /*
     * */
     var Send_Message by mutableStateOf("")
-    var MyMessagesList by mutableStateOf(listOf(SendMessageDataClass("")))
     fun sendMessages():SendMessagesApi{
         val apiService=SendMessagesClass(user_name,password,chatId).getInstance()
         return apiService
