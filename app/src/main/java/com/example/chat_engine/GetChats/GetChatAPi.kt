@@ -13,7 +13,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
-
+/*
+API to get the chat details
+ */
 interface GetChatApi{
     @GET("chats/")
     fun getChats(): Call<List<GetChatsDataClass>?>?

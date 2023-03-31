@@ -1,5 +1,9 @@
 package com.example.chat_engine.ConstantData
 
+
+/*
+List of commonly used variables
+ */
 class ConstVariables {
     val projectid="6e599b35-efb2-407a-a958-597b7571efb9"
 

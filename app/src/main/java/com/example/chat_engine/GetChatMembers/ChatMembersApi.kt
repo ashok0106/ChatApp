@@ -10,7 +10,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.http.GET
-
+/*
+Api to get the list of members in a Chat Group
+ */
 interface GetChatMembersApi{
     @GET("people/")
     fun getChatMembers(): Call<List<ChatMembersDataClass>?>?
@@ -26,6 +28,8 @@ class GetChatMembersClass(val username:String,val password:String,val chatid:Int
         return retrofitAPI
     }
 }
+
+
 fun GetChatMembers(
     context: Context,
     vm: MainViewModel,

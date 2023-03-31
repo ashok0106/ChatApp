@@ -19,6 +19,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
 const val GetUsersUrl="https://api.chatengine.io/"
+
+/*
+API TO GET THE LIST OF ALL USERS PRESENT IN THE PROJECT
+ */
 interface GetUserApi{
     @GET("users/")
     fun getUsers(): Call<List<GetUsersDataClass>?>?
