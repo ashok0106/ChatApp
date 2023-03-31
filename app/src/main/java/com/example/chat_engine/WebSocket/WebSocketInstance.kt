@@ -2,6 +2,7 @@ package com.example.chat_engine.WebSocket
 
 import android.os.Looper
 import android.util.Log
+import com.example.chat_engine.ConstantData.ConstVariables
 import com.example.chat_engine.ViewModel.MainViewModel
 import com.example.chat_engine.mychats.GetMessages.GetMessagesDataClass.MessagesDataClassItem
 import com.google.gson.Gson
@@ -15,7 +16,7 @@ open class ChatWebSocket(private val mainViewModel: MainViewModel): WebSocketLis
     var webSocket: WebSocket
 
     init {
-        val request = Request.Builder().url("wss://api.chatengine.io/chat/?projectID=05218f40-be15-4be5-9db2-13dc139a5f0a&chatID=${mainViewModel.chatId}&accessKey=${mainViewModel.chatAccessKey}").build()
+        val request = Request.Builder().url("wss://api.chatengine.io/chat/?projectID=${ConstVariables().projectid}&chatID=${mainViewModel.chatId}&accessKey=${mainViewModel.chatAccessKey}").build()
         val client = OkHttpClient()
         webSocket = client.newWebSocket(request, this)
     }

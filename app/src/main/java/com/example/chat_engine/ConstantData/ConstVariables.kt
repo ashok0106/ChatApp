@@ -1,7 +1,7 @@
 package com.example.chat_engine.ConstantData
 
 class ConstVariables {
-    val projectid="05218f40-be15-4be5-9db2-13dc139a5f0a"
+    val projectid="6e599b35-efb2-407a-a958-597b7571efb9"
 
     /*
     Below is the list of urls used

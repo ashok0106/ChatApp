@@ -1,4 +1,4 @@
-package com.example.chat_engine.GetChatMembers
+package com.example.chat_engine.GetChatMembers.dataclasses
 
 import com.example.chat_engine.GetChatMembers.dataclasses.Person
 

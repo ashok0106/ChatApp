@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chat_engine.GetChatMembers.ChatMembersDataClass
 import com.example.chat_engine.GetChatMembers.GetChatMembersApi
 import com.example.chat_engine.GetChatMembers.GetChatMembersClass
+import com.example.chat_engine.GetChatMembers.dataclasses.ChatMembersDataClass
 import com.example.chat_engine.GetChats.GetChatApi
 import com.example.chat_engine.GetChats.GetChatClass
 import com.example.chat_engine.GetChats.GetChatsDataClass
@@ -47,6 +47,7 @@ class MainViewModel():ViewModel() {
     }
 
     var result by mutableStateOf("")
+
 //    to authenticate user
     var user_name by mutableStateOf("")
     var password by mutableStateOf("")
@@ -78,7 +79,6 @@ class MainViewModel():ViewModel() {
         return apiService
     }
 
-//    var addedUserName by mutableStateOf("")
 
 //    This function is called to get
 //    all messages with their respective details
@@ -130,12 +130,7 @@ class MainViewModel():ViewModel() {
     }
 
 //    this is to check if a user is typing or not
-//    private val _istyping= MutableStateFlow(false)
-//    var istyping:StateFlow<Boolean> = _istyping
-//
-//    fun updateIsTyping(newList: Boolean){
-//        _istyping.value=newList
-//    }
+
 
     val istyping = mutableStateOf(false)
     val istypinguser= mutableStateOf("")

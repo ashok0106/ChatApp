@@ -22,11 +22,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chat_engine.ViewModel.MainViewModel
 
+
+/*
+To show the first List of questions
+ */
 @Composable
 fun ShowQuestions(questionViewModel: QuestionViewModel,viewModel: MainViewModel) {
+    /*
+    To show the current list when clicked
+     */
     val expandedQuestion = remember { mutableStateOf<Question?>(null) }
-
+    /*
+    List of questions which are stored in the room
+    database which are extracted using observeAsState
+     */
     val questions by questionViewModel.questions.observeAsState(emptyList())
+    /*
+    To know which card to show
+     */
     var open by remember {
         mutableStateOf(false)
     }
@@ -61,8 +74,6 @@ fun ShowQuestions(questionViewModel: QuestionViewModel,viewModel: MainViewModel)
                         .fillMaxWidth()
                 )
             }
-//            }
-
             if (expandedQuestion.value == question) {
                 question.subQuestions.forEach { subQuestion ->
                     viewModel.chat_name=question.title
@@ -83,7 +94,10 @@ fun ShowQuestions(questionViewModel: QuestionViewModel,viewModel: MainViewModel)
         questionViewModel.loadQuestions()
     }
 }
-
+/*
+Composable function which calls itself
+recursively whenever card is called
+ */
 @Composable
 fun SubQuestion(
     viewModel:MainViewModel,

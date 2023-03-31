@@ -12,22 +12,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chat_engine.ViewModel.MainViewModel
 import com.example.chat_engine.navigation.navigation
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 
 class MainActivity : ComponentActivity() {
 
     lateinit var sharedPreferences: SharedPreferences
 
-//    val questionViewModel by viewModels<QuestionViewModel>()
     @SuppressLint("SuspiciousIndentation", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
+    WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
-//        lifecycleScope.launch {
-//            withContext(Dispatchers.IO){
-//
-//                QuestionListing(questionViewModel)
-//            }
-//        }
         setContent {
 
 //            QuestionList(questionViewModel)
@@ -44,7 +42,16 @@ class MainActivity : ComponentActivity() {
             }
             username.value = sharedPreferences.getString("USERNAME", "").toString()
             pwd.value = sharedPreferences.getString("SECRET", "").toString()
-                navigation(vm,sharedPreferences)
+
+                navigation(
+                    vm,
+                    sharedPreferences
+                )
+//            ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)){ view, insets->
+//                val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+//                view.updatePadding(bottom =bottom)
+//                insets
+//        }
         }
     }
 }

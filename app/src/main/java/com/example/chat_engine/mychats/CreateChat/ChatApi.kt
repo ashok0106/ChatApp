@@ -1,6 +1,7 @@
 package com.example.chat_engine.mychats
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
 import com.example.chat_engine.ConstantData.ConstVariables
 import com.example.chat_engine.ConstantData.httpclient
@@ -34,9 +35,15 @@ class CreateChatClass(val username:String,val password:String){
 
 fun ChatHelpingFunction(
     context: Context,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
 )
 {
+
+//    val editor: SharedPreferences.Editor = sharedPreferences.edit()
+//    editor.putString("USERNAME", username)
+//    editor.putString("SECRET", password)
+//    editor.apply()
+
     val myadded= CreateChatDataFile(false,viewModel.chat_name, listOf("Admin"))
     println(viewModel.chat_name)
     val retrofitAPI= viewModel.CreateNewChat()
@@ -45,11 +52,13 @@ fun ChatHelpingFunction(
 
     call!!.enqueue(object : Callback<responsedataclass?> {
         override fun onResponse(call: Call<responsedataclass?>?, response: Response<responsedataclass?>) {
-            Toast.makeText(context, "Room Created", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Room Created ${viewModel.user_name } ${viewModel.password}", Toast.LENGTH_SHORT).show()
             val model: responsedataclass? = response.body()
             val resp =
                 "Response Code : " + response.code() + "\n" + "id " + model?.id + "\n" + "Title : " + model?.id
             viewModel.NewChatDetails?.title=resp
+
+//            onClickGotoMainScreen()
         }
 
         override fun onFailure(call: Call<responsedataclass?>?, t: Throwable) {

@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chat_engine.ViewModel.MainViewModel
-import com.example.chat_engine.screens.SimpleTextField
+import com.example.chat_engine.screens.simpleTextField
 import com.example.chat_engine.screens.toColor
 
 
@@ -32,32 +32,22 @@ fun SignUpScreen(
 ) {
     val context= LocalContext.current
     var result = remember { mutableStateOf("") }
-
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val gradient = Brush.linearGradient(
-            colors = listOf("#9e05fc".toColor(), "#0571e6".toColor()),
-            start = Offset(0f, 0f),
-            end = Offset(0f, constraints.maxHeight.toFloat())
-        )
-        val gradient2 = Brush.linearGradient(
-            colors = listOf("#cd7aff".toColor(),"#9dc3ed".toColor()),
-            start = Offset(0f, 0f),
-            end = Offset(0f, constraints.maxHeight.toFloat())
-        )
+    val cardBackGround ="#f5f5f2".toColor()
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.background(gradient)
+            modifier = Modifier
                 .fillMaxSize()
         ) {
             Card(
                 modifier = Modifier
                     .fillMaxHeight(0.8f)
                     .padding(top = 150.dp, start = 20.dp, end = 20.dp, bottom = 0.dp)
-                    .clip(RoundedCornerShape(60.dp))
+                    .clip(RoundedCornerShape(60.dp)),
+                backgroundColor = cardBackGround
             )
             {
                 Box(
                     modifier = Modifier.fillMaxSize()
-                        .background(brush = gradient2)
                 ) {
                 Column(
                     modifier = Modifier.padding(20.dp),
@@ -70,33 +60,47 @@ fun SignUpScreen(
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
-
-                        vm.user_name = SimpleTextField("Username", KeyboardType.Text)
+                    /*
+                    Variable to store the username
+                     */
+                        vm.user_name = simpleTextField("Username", KeyboardType.Text)
+                        Spacer(modifier = Modifier.height(20.dp))
+                    /*
+                    Variable to store the password
+                     */
+                        vm.password = simpleTextField("Password", KeyboardType.Password)
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        vm.password = SimpleTextField("Password", KeyboardType.Password)
-                        var first_name by remember {
-                            mutableStateOf("")
-                        }
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        first_name = SimpleTextField(
+                    /*
+                   Variable to store the first name
+                    */
+                        var first_name by remember { mutableStateOf("") }
+                        first_name = simpleTextField(
                             placeholder = "First Name",
                             KeyboardType.Text
                         )
+                        Spacer(modifier = Modifier.height(20.dp))
+                    /*
+                   Variable to store the lastname
+                    */
                         var last_name by remember {
                             mutableStateOf("")
                         }
-                        Spacer(modifier = Modifier.height(20.dp))
 
-                        last_name = SimpleTextField(
+                        last_name = simpleTextField(
                             placeholder = "Last Name",
                             KeyboardType.Text
                         )
+                        var flag by remember {
+                            mutableStateOf(false)
+                        }
+                        flag = !(vm.user_name==""||vm.password==""||first_name==""||last_name=="")
+
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                             Button(
+                                enabled=flag,
                                 onClick = {
                                     SignUpHelper(
                                         context = context,

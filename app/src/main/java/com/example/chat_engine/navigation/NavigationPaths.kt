@@ -23,13 +23,14 @@ fun navigation(
     sharedPreferences:SharedPreferences,
     navController: NavHostController= rememberNavController()
 ) {
-    var startDestination:String="first_screen"
+    var startDestination="Login_Screen"
     val ChatWebSocket=ChatWebSocket(vm)
 
     NavHost(navController = navController, startDestination = startDestination){
-        composable(route="first_screen"){
+
+        composable(route="Login_Screen"){
             LoginScreen(
-                onClickGotoMainScreen={
+                onClickGotoChatScreen={
                     navController.navigate("Chat_screen")
                 },
                 onClickGotoSignUpScreen={
@@ -39,6 +40,7 @@ fun navigation(
                 sharedPreferences
             )
         }
+
         composable(route="SignUpScreen"){
             SignUpScreen(vm)
         }

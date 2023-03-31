@@ -13,6 +13,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+/*
+Called when the user is typing something
+ */
 interface IstypingApi {
     @POST("typing/")
     fun Istyping(
@@ -42,6 +45,7 @@ fun IsTypingHelpingFunction(
     val call: Call<IsTypingDataClass?>? = retrofitAPI.Istyping()
     call!!.enqueue(object : Callback<IsTypingDataClass?> {
         override fun onResponse(call: Call<IsTypingDataClass?>?, response: Response<IsTypingDataClass?>) {
+            Toast.makeText(context,"istypingsent",Toast.LENGTH_SHORT).show()
             val model: IsTypingDataClass? = response.body()
             val resp =
                 "Response Code : " + response.code()

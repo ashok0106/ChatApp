@@ -2,7 +2,6 @@ package com.example.chat_engine.screens
 
 import android.annotation.SuppressLint
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.compose.foundation.background
@@ -25,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import com.example.chat_engine.ViewModel.MainViewModel
 import androidx.compose.ui.draw.clip
@@ -40,34 +38,43 @@ import com.example.chat_engine.GetUsers.GetUsers
 import com.example.chat_engine.MainActivity
 import com.example.chat_engine.R
 import com.example.chat_engine.mychats.AddChatMembers.AddMembersInChat
-import com.example.chat_engine.mychats.ChatHelpingFunction
 import com.example.chat_engine.mychats.GetMessages.getMessages
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ChatScreen(
-    vm: MainViewModel,
+    viewModel: MainViewModel,
     onClickGotoMessages:()->Unit,
     sharedPreferences:SharedPreferences,
     onClickGotoFAQScreen:()->Unit
 ) {
+    /*
+    to store the username and password values
+     */
     val editor: SharedPreferences.Editor = sharedPreferences.edit()
+    editor.putString("USERNAME", viewModel.user_name)
+    editor.putString("SECRET", viewModel.password)
+    editor.apply()
+
     val context= LocalContext.current
     var showuser by remember {
         mutableStateOf(false)
     }
 
-    GetChatDetails(context,vm)
-    GetChatDetails(
-        context,
-        vm,
-    )
+    /*
+    To get the chat details of the current users
+     */
+    GetChatDetails(context,viewModel)
 
     Column(
         modifier = Modifier.padding()
     ) {
+        /*
+        Top bar to show top app bar on the
+        chat screen
+         */
         TopAppBar(
-            title = { Text("Welcome ${vm.user_name}") },
+            title = { Text("Welcome ${viewModel.user_name}") },
             backgroundColor = MaterialTheme.colors.primary,
             contentColor = MaterialTheme.colors.onPrimary,
             actions = {
@@ -83,13 +90,17 @@ fun ChatScreen(
                     }) {
                     Icon(Icons.Filled.ExitToApp, contentDescription = "Search")
                 }
-            }
+            }, modifier = Modifier.statusBarsPadding()
         )
+        /*
+        To show the list of all the chats of that
+        user
+         */
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {
 
-            itemsIndexed(vm.GetChatList) { index,item->
+            itemsIndexed(viewModel.GetChatList) { index, item->
 
                 var showDialog by remember { mutableStateOf(false) }
                 var MyColor by remember {
@@ -114,21 +125,33 @@ fun ChatScreen(
                                         }
                                     )
                                 }
+                                    /*
+                                    on clicking here
+                                    the chatid and accesskey of the current chat are stored
+                                    in the viewmodel variables
+                                    loader status is set to true ,
+                                    the screen navigates to the messages screen
+
+                                     */
                                 .clickable(
                                     onClick = {
-                                        vm.open.value = true
-                                        vm.chatId = item.id
-                                        vm.chatAccessKey = item.access_key
+                                        viewModel.open.value = true
+                                        viewModel.chatId = item.id
+                                        viewModel.chatAccessKey = item.access_key
                                         onClickGotoMessages()
                                         getMessages(
                                             context = context,
-                                            vm,
-                                            vm.chatId,
+                                            viewModel,
+                                            viewModel.chatId,
                                         )
                                     }
                                 ),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            /*
+                            Icon which on clicked sets the status of showDialog to true
+                            which shows the details of the current chat
+                             */
                             GradientIcon(
                                 painter = painterResource(R.drawable.baseline_account_circle_24),
                                 colors = listOf(
@@ -141,6 +164,10 @@ fun ChatScreen(
                                     .padding(end = 16.dp)
                                     .clickable { showDialog = true }
                             )
+                            /*
+                            Component to show the title and id of
+                            the chat
+                             */
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth(0.8f)
@@ -156,8 +183,12 @@ fun ChatScreen(
                                     color = Color.Gray
                                 )
                             }
+                            /*
+                            It shows the list of the user available to add
+                            in the chat
+                             */
                             IconButton(onClick = {
-                                vm.chatId=item.id
+                                viewModel.chatId=item.id
                                 showuser=true
 //                                AddMembersInChat(context,vm)
                             }) {
@@ -166,6 +197,9 @@ fun ChatScreen(
                         }
                     }
                 )
+                /*
+                it shows the details of the chat
+                 */
                 if (showDialog) {
                     Dialog(
                         onDismissRequest = { showDialog = false },
@@ -192,8 +226,11 @@ fun ChatScreen(
                         }
                     )
                 }
+                /*
+                It shows the list of users which you can add to your chat
+                 */
                 if (showuser) {
-                    GetUsers(context,vm)
+                    GetUsers(context,viewModel)
                     Dialog(
                         onDismissRequest = { showuser = false },
                         content = {
@@ -217,17 +254,20 @@ fun ChatScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Spacer(modifier = Modifier.height(5.dp))
+                                    /*
+                                     To show the list of user in the userlist
+                                     */
                                     LazyColumn(
                                         modifier = Modifier.fillMaxSize()
                                     ) {
-                                        itemsIndexed(vm.UsersList) { index, item ->
+                                        itemsIndexed(viewModel.UsersList) { index, item ->
                                             Card(
                                                 modifier = Modifier
                                                     .height(40.dp)
                                                     .fillMaxWidth()
                                                     .clickable {
-                                                        vm.MemberName=item.username
-                                                        AddMembersInChat(context,vm)
+                                                        viewModel.MemberName=item.username
+                                                        AddMembersInChat(context,viewModel)
                                                         showuser=false
                                                     }
                                             ) {
@@ -247,13 +287,7 @@ fun ChatScreen(
                                                 }
                                             }
                                         }
-
                                     }
-                                    Text(
-                                        text = vm.UsersList.size.toString(),
-                                        fontSize = 14.sp,
-                                        color = Color.Gray
-                                    )
                                 }
                             }
                         }
@@ -265,139 +299,43 @@ fun ChatScreen(
 
     }
     floating_Button(
-        context,
-        onClickGotoFAQScreen,
-        vm
+        onClickGotoFAQScreen
     )
-
-//    val temp=AddMemberIcon(vm = vm, usershowDialog = showuser)
-//    showuser=temp
-
-
 }
 
-
-
-@Composable
-fun AddMemberIcon(
-    vm: MainViewModel,
-    usershowDialog:Boolean
-):Boolean {
-    var showDialog by remember { mutableStateOf(false) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 30.dp, bottom = 30.dp),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.End
-    ) {
-
-        showDialog=usershowDialog
-
-        if (showDialog) {
-            Dialog(
-                onDismissRequest = { showDialog = false },
-                content = {
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(MaterialTheme.colors.surface)
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Card(
-                            modifier = Modifier
-                        ) {
-                            Column() {
-                                var flag by remember {
-                                    mutableStateOf(false)
-                                }
-                                vm.MemberName=SimpleTextField("Enter User Name", KeyboardType.Text)
-                                flag = vm.MemberName != ""
-                                Button(
-                                    enabled = flag,
-                                    onClick = {
-
-                                    }) {
-                                    Text(text = "Submit")
-                                }
-                            }
-                        }
-                    }
-                }
-            )
-        }
-    }
-    return showDialog
-}
-
+/*
+Floating button which takes a function
+to navigate to the FAQ screen
+ */
 @Composable
 fun floating_Button(
-    context:Context,
     onClickGotoFAQScreen:()->Unit,
-    vm: MainViewModel
 ) {
-    val context= LocalContext.current
-    var showDialog by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(end = 30.dp, bottom = 30.dp),
+            .padding(end = 30.dp, bottom = 30.dp)
+            .navigationBarsPadding(),
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.End
     ) {
 
         FloatingActionButton(
             onClick = {
-//                showDialog=true
                 onClickGotoFAQScreen()
             }
         )
         {
             Text(text = "Add")
         }
-        if (showDialog) {
-            Dialog(
-                onDismissRequest = { showDialog = false },
-                content = {
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(MaterialTheme.colors.surface)
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Card(
-                            modifier = Modifier
-                        ) {
-                            Column() {
-                                var flag by remember {
-                                    mutableStateOf(false)
-                                }
-
-                                vm.chat_name=SimpleTextField("Enter Chat Room Name", KeyboardType.Text)
-                                flag = vm.chat_name != ""
-                                Button(
-                                    enabled = flag,
-                                    onClick = {
-                                        ChatHelpingFunction(context,vm)
-                                        GetChatDetails(
-                                            context,
-                                            vm,
-                                        )
-
-                                }) {
-                                    Text(text = "Submit")
-                                }
-                            }
-                        }
-                    }
-                }
-            )
-        }
     }
 }
 
+
+/*
+To show the icon which can be provided
+with the different editable properties
+ */
 @Composable
 fun GradientIcon(
     painter: Painter,

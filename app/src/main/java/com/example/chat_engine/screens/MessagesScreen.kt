@@ -1,10 +1,8 @@
 package com.example.chat_engine.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
@@ -13,26 +11,20 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.chat_engine.GetChatMembers.GetChatMembers
 import com.example.chat_engine.IsTyping.IsTypingHelpingFunction
-import com.example.chat_engine.R
+import com.example.chat_engine.ProgressBarIndicator.LoadingFile
 import com.example.chat_engine.WebSocket.ChatWebSocket
 import com.example.chat_engine.ViewModel.MainViewModel
-import com.example.chat_engine.mychats.SendMessages.SendMessageDataClass
 import com.example.chat_engine.mychats.SendMessages.SendMessagesHelpingFunction
 import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -43,118 +35,63 @@ fun GetMessagesFunction(
     onClickGotoChatScreen:()->Unit
 ) {
     val context= LocalContext.current
+    /*
+    GetChatMembers() function gets the members in that particular chat
+     */
     GetChatMembers(context = context,vm)
+    /*
+    to show the loader until
+     */
     if(vm.open.value) {
         vm.startThread()
-        DialogBoxLoading()
+        LoadingFile()
     }
-    var temp:()->Unit
 
     Column(modifier = Modifier
+
     ) {
 
+        /*
+        A composable to show the topappbar
+         */
         MyUI(vm,onClickGotoChatScreen)
 
+        /*
+        variables to store the messages of a
+        particular chat
+         */
         val messageListStateList=vm.messageList.collectAsState()
         val messageList=messageListStateList.value
 
+        /*
+        custom defined colors used to show in the background
+         */
+        val DifferentUserMessageColor = "#03DAC5".toColor()
+        val LazyColumnBackgroundColor="#f5f7e1".toColor()
 
-
-        val temp = "#03DAC5".toColor()
-        val temp2="#f5f7e1".toColor()
 
         val lazyListState= rememberLazyListState()
+        /*
+        We are showing the last values of the
+        lazy column
+        to avoid negative values it is called in the if statement
+         */
         if(vm.ChatList.size>0){
             LazyColumn(
                 state=lazyListState,
                 modifier = Modifier
-                    .fillMaxHeight(0.9f)
-                    .background(temp2),
+                    .fillMaxHeight(0.823f)
+                    .background(LazyColumnBackgroundColor),
             ){
                 itemsIndexed(vm.ChatList){items,it->
                     val time=it.created.substring(10,16)
                     if(it.sender_username!=vm.user_name){
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                            , horizontalAlignment = Alignment.Start
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(start=20.dp,top=8.dp,end=8.dp)
+                            ToShowDifferentUserMessages(it.text,time)
 
-                            ){
-                                Card(
-
-//                                shape = RoundedCornerShape(20.dp),
-                                    modifier = Modifier
-                                        .padding(15.dp)
-//                                    .background(Color.White)
-                                        .clip(RoundedCornerShape(50.dp))
-                                    ,
-                                    backgroundColor = Color.White
-                                ) {
-                                    Column(
-                                    )
-                                    {
-                                        Text(
-                                            text = it.text,
-                                            fontSize = 20.sp,
-                                            modifier = Modifier
-                                                .padding(start=5.dp,end = 8.dp)
-                                        )
-                                        Spacer(modifier = Modifier.height(2.dp))
-                                        Text(
-                                            text = time,
-                                            modifier = Modifier
-                                                .padding(start=5.dp,end = 8.dp),
-                                            fontSize = 10.sp
-                                        )
-                                    }
-
-                                }
-                            }
-                        }
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                     else{
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                            , horizontalAlignment = Alignment.End
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .padding(start = 20.dp, top = 8.dp, end = 8.dp)
-
-                            ) {
-                                Card(
-                                    modifier = Modifier
-                                        .padding(15.dp)
-                                        .clip(RoundedCornerShape(50.dp)),
-                                    backgroundColor = temp
-                                ) {
-                                    Column(
-                                    )
-                                    {
-                                        Text(
-                                            text = it.text,
-                                            fontSize = 20.sp,
-                                            modifier = Modifier
-                                                .padding(start = 10.dp, end = 8.dp)
-                                        )
-                                        Spacer(modifier = Modifier.height(2.dp))
-                                        Text(
-                                            text = time,
-                                            modifier = Modifier
-                                                .padding(start = 15.dp, end = 8.dp),
-                                            fontSize = 10.sp
-                                        )
-                                    }
-
-                                }
-                            }
-                        }
+                        ToShowUserMessages(it.text,time)
                     }
                 }
             }
@@ -163,61 +100,47 @@ fun GetMessagesFunction(
             }
         }
         else{
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxHeight(0.9f)
-                    .fillMaxWidth()
-                    .background(temp2)
-            ){
-                items(1) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 100.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "No Messages Available",
-                            fontSize = 20.sp
-                        )
-                    }
-                }
-            }
+            /*
+            Called when there are no chats available
+             */
+            NoChatAvailable()
+
         }
-
-
-        Spacer(modifier = Modifier.height(0.dp))
-
         Card(
             modifier = Modifier
-//                .clip(RoundedCornerShape(10.dp))
+                .fillMaxHeight(1f)
+                .fillMaxWidth()
+                .navigationBarsPadding()
             ,
-            backgroundColor = temp2
+            backgroundColor = LazyColumnBackgroundColor
         ) {
 
             Box(
                 modifier = Modifier
                     .padding(start = 15.dp, end = 15.dp)
-//                    .background(Color.Cyan)
                     .fillMaxWidth()
             ) {
-                Row(
-                    //            Modifier.height(15.dp)
+
+                /*
+                Row to show textfield and a send button which sends
+                the messages
+                 */
+                Row(modifier = Modifier
                 ) {
                     var text by remember { mutableStateOf("") }
-                    //            vm.Send_Message=SimpleTextField()
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(0.7f),
                         value = text,
                         onValueChange = { newText ->
                             text = newText
                             IsTypingHelpingFunction(context,vm)
-//                            SendMessagesHelpingFunction(context, vm)
                         },
                         placeholder = { Text(text = "Message") }
-                        //        textStyle = TextStyle(brush = brush)
                     )
+                    /*
+                    Used to make the button visible when
+                    there some text in it otherwise disable it
+                     */
                     var flag by remember {
                         mutableStateOf(false)
                     }
@@ -226,17 +149,11 @@ fun GetMessagesFunction(
                     Button(
                         shape = CircleShape,
                         enabled = flag,
-                        //                modifier = Modifier.clip(RoundedCornerShape(30.dp)),
                         onClick = {
-//                            vm.open.value=true
                             vm.Send_Message = text
-                            //                    listener.sendMessage(webSocket,text)
                             SendMessagesHelpingFunction(context, vm)
                             ChatWebSocket.sendMessage(vm.Send_Message)
-                            //                vm.ChatList.add(MessagesDataClassItem("time",,vm.user_name,vm.Send_Message))
                             text = ""
-                            //                    getMessages(context,vm,vm.chatId){
-                            //                    }
                         }
                     ) {
                         Text(text = "Send")
@@ -244,12 +161,136 @@ fun GetMessagesFunction(
                 }
             }
         }
-//        Text(text = "this is message response ${vm.result}")
     }
 }
 
+/*
+To show  user's messages
+ */
+@Composable
+fun ToShowUserMessages(
+    text:String,
+    time:String
+) {
+    val temp = "#03DAC5".toColor()
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+        , horizontalAlignment = Alignment.End
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 20.dp, top = 8.dp, end = 8.dp)
 
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(15.dp)
+                    .clip(RoundedCornerShape(50.dp)),
+                backgroundColor = temp
+            ) {
+                Column(
+                )
+                {
+                    Text(
+                        text = text,
+                        fontSize = 20.sp,
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = time,
+                        modifier = Modifier
+                            .padding(start = 15.dp, end = 8.dp),
+                        fontSize = 10.sp
+                    )
+                }
 
+            }
+        }
+    }
+
+}
+/*
+To show different user's messages
+ */
+@Composable
+fun ToShowDifferentUserMessages(
+    text:String,
+    time:String
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+        , horizontalAlignment = Alignment.Start
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 20.dp, top = 8.dp, end = 8.dp)
+
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(15.dp)
+                    .clip(RoundedCornerShape(50.dp)),
+                backgroundColor = Color.White
+            ) {
+                Column(
+                )
+                {
+                    Text(
+                        text = text,
+                        fontSize = 20.sp,
+                        modifier = Modifier
+                            .padding(start = 5.dp, end = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = time,
+                        modifier = Modifier
+                            .padding(start = 5.dp, end = 8.dp),
+                        fontSize = 10.sp
+                    )
+                }
+
+            }
+        }
+    }
+}
+/*
+To show when there are no chats available
+ */
+@Composable
+fun NoChatAvailable() {
+    val temp2="#f5f7e1".toColor()
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxHeight(0.8f)
+            .fillMaxWidth()
+            .background(temp2)
+    ){
+        items(1) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 100.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "No Messages Available",
+                    fontSize = 20.sp
+                )
+            }
+        }
+    }
+}
+
+/*
+TopAppBar to store the usernames and show who is typing
+ */
 @OptIn(DelicateCoroutinesApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -267,7 +308,6 @@ fun MyUI(vm:MainViewModel,onClickGotoChatScreen:()->Unit) {
                 else {
                     LazyRow(
                         modifier = Modifier
-//                        .height(20.dp)
                             .fillMaxWidth()
                     ) {
                         items(vm.ChatMembersList) {
@@ -284,23 +324,26 @@ fun MyUI(vm:MainViewModel,onClickGotoChatScreen:()->Unit) {
                     }
                 }
             }
-//            Text(text = "Agent $istyping")
 
         },
         navigationIcon = {
+            /*
+            Icon to go back
+             */
             IconButton(onClick = {
                 onClickGotoChatScreen()
                 Toast.makeText(contextForToast, "Back Icon Clicked", Toast.LENGTH_SHORT)
                     .show()
             }) {
-//                Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24), contentDescription = "Go Back")
-//                Spacer(modifier = Modifier.width(20.dp))
                 Icon( imageVector = Icons.Filled.ArrowBack,contentDescription = "Go Back")
             }
-        },
+        }, modifier = Modifier.statusBarsPadding()
 
 
     )
 }
 
+/*
+Function to change the hex code to the color
+ */
 fun String.toColor() = Color(android.graphics.Color.parseColor(this))
