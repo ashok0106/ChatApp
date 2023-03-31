@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@SuppressLint("MutableCollectionMutableState")
 class MainViewModel():ViewModel() {
 
     private val _messageList= MutableStateFlow(emptyList<MessagesDataClassItem>())
@@ -63,10 +64,6 @@ class MainViewModel():ViewModel() {
 
 //    to create new chat
     var chat_name by mutableStateOf("Agent")
-
-//    fun GenerateChatName(text:String){
-//        chat_name=text
-//    }
 
     var tempchat= CreateChatDataFile(false,"", usernames = listOf("Admin"))
     var NewChatDetails: CreateChatDataFile? by mutableStateOf(tempchat)
