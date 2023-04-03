@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -48,7 +49,7 @@ fun LoadingFile(
                 shape = RoundedCornerShape(cornerRadius)
             ) {
                 Column(
-                    modifier = Modifier
+                    modifier = Modifier.testTag("loading")
                         .padding(start = paddingStart, end = paddingEnd, top = paddingTop),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally

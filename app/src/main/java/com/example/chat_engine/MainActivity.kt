@@ -28,9 +28,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-//            QuestionList(questionViewModel)
-//            FAQScreen()
-
             val vm: MainViewModel = viewModel()
             val context = LocalContext.current
             sharedPreferences = getSharedPreferences("UserDetails", Context.MODE_PRIVATE)

@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -158,15 +159,39 @@ fun FirstLogin(
                     Variables to store username and password which
                     are declared in the MainViewModel class
                      */
-                    viewModel.user_name = simpleTextField("Username", KeyboardType.Text)
+//                    Column(modifier=Modifier.testTag("username")) {
+//                        viewModel.user_name = simpleTextField("Username", KeyboardType.Text)
+//                    }
+                    var text1 by remember { mutableStateOf("") }
+                    OutlinedTextField(
+                        modifier=Modifier.testTag("username"),
+                        value = text1,
+                        onValueChange = { newText ->
+                            text1 = newText
+                        },
+                        placeholder= {Text(text = "")},
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                    )
+                    viewModel.user_name=text1
+
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    viewModel.password = simpleTextField("Password", KeyboardType.Password)
+                    var text2 by remember{ mutableStateOf("") }
+                    OutlinedTextField(
+                        modifier=Modifier.testTag("password"),
+                        value = text2,
+                        onValueChange = { newText ->
+                            text2 = newText
+                        },
+                        placeholder= {Text(text = "")},
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                    )
+                    viewModel.password=text2
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
                         /*
-                        Variables to store status of text-fields so that
+                        Variable to store status of text-fields so that
                         button enables only if the below conditions match
                          */
                         var temp by remember {
@@ -203,7 +228,7 @@ fun FirstLogin(
                                 )
                             },
                             shape = RoundedCornerShape(50.dp),
-                            modifier = Modifier
+                            modifier = Modifier.testTag("login")
                                 .fillMaxWidth()
                                 .height(50.dp)
                         ) {

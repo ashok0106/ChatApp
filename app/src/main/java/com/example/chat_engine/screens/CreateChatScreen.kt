@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
@@ -68,12 +69,15 @@ fun ChatScreen(
 
     Column(
         modifier = Modifier.padding()
+            .testTag("Welcome")
     ) {
         /*
         Top bar to show top app bar on the
         chat screen
          */
         TopAppBar(
+            modifier = Modifier.statusBarsPadding()
+                ,
             title = { Text("Welcome ${viewModel.user_name}") },
             backgroundColor = MaterialTheme.colors.primary,
             contentColor = MaterialTheme.colors.onPrimary,
@@ -90,7 +94,7 @@ fun ChatScreen(
                     }) {
                     Icon(Icons.Filled.ExitToApp, contentDescription = "Search")
                 }
-            }, modifier = Modifier.statusBarsPadding()
+            },
         )
         /*
         To show the list of all the chats of that
